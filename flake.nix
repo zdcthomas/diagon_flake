@@ -56,22 +56,30 @@
             cmakeFlags = [
               # "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
               # "-DFETCHCONTENT_QUIET=OFF"
-              "DFETCHCONTENT_SOURCE_DIR_json=${json}"
-              "DFETCHCONTENT_SOURCE_DIR_antlr=${antlr}"
+              # "DFETCHCONTENT_SOURCE_DIR_json=${json}"
+              # "DFETCHCONTENT_SOURCE_DIR_antlr=${antlr}"
             ];
 
+            # preConfigure = ''
+            #   mkdir -p .third-party
+            #   cp -r ${json} .third-party/json
+            #   cp -r ${antlr} .third-party/antlr
+            #   chmod -R +w .third-party/json
+            #   chmod -R +w .third-party/antlr
+            # '';
+
             patches = [
-              (substituteAll {
-                # We will download them instead of cmake's fetchContent
-                src = ./remove-fetchcontent-usage.patch;
-                catch2Src = catch2.src;
-              })
+              ./remove-fetchcontent-usage.patch
             ];
             # patchPhase = ''
             #   ls -la
             #   # sed -i 's;https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent;file://${json};g' CMakeLists.txt
             #   # cat CMakeLists.txt
             # '';
+            preConfigure = ''
+              ln -s ${json} json
+              ln -s ${antlr} antlr
+            '';
 
             meta = with pkgs.lib; {
               description = "Interactive ASCII art diagram generators. :star2";
